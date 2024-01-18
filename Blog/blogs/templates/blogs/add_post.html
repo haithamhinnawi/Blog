@@ -1,0 +1,57 @@
+{% extends 'blogs/base.html' %}
+{% block content %}
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white">
+                        <h3 class="mb-0">Add Post</h3>
+                    </div>
+                    <div class="card-body">
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="{{ form.title.id_for_label }}" class="form-label">Title:</label>
+                                {{ form.title }}
+                                {% if form.title.errors %}
+                                    <small class="text-danger">{{ form.title.errors|join:", " }}</small>
+                                {% endif %}
+                            </div>
+                            <form method="post">
+                                {% csrf_token %}     
+                                <div class="mb-3">
+                                    <label for="{{ form.body.id_for_label }}" class="form-label">Body:</label>
+                                    {{ form.body }}
+                                    {% if form.body.errors %}
+                                        <small class="text-danger">{{ form.body.errors|join:", " }}</small>
+                                    {% endif %}
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="{{ form.status.id_for_label }}" class="form-label">Status:</label>
+                                    {{ form.status }}
+                                    {% if form.status.errors %}
+                                        <small class="text-danger">{{ form.status.errors|join:", " }}</small>
+                                    {% endif %}
+                                </div>
+                            <button id="promptButton" class="btn btn-primary">Create by ChatGPT</button>
+                            
+                            <button type="submit" class="btn btn-primary">Save</button> <span class="text-danger">{{ msg }}</span> 
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        document.getElementById('promptButton').addEventListener('click', function() {
+            var title = window.prompt('Enter the title:');
+            if (title !== null) {
+                window.location.href = "/blogs/create-post-by-chatgpt/?title=" + title;
+            }
+        });
+    </script>
+
+{% endblock %}

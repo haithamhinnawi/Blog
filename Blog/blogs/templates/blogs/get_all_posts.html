@@ -1,0 +1,101 @@
+{% extends 'blogs/base.html' %}
+
+{% block content %}
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="{{ message.tags }} container mt-4">{{ message }}</div>
+    {% endfor %}
+{% endif %}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-3">
+            <!-- Notification Square -->
+            <div class="notification-square">
+                <h5>Notifications</h5>
+                <ul class="list-group">
+                    {% for notification in notifications %}
+                        <li class="list-group-item">{{ notification.message }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <!-- Main Content -->
+            <div class="row">
+                {% for post in posts %}
+                    <div class="col-md-12">
+                        <div class="card mb-4 shadow">
+                            <div class="card-body">
+                                <h3 class="card-title">{{ post.title }}</h3>
+                                <p class="card-text">
+                                    <small class="text-muted">
+                                        Published on {{ post.pub_date|date:"F d, Y" }} by {{ post.author.username }}
+                                    </small>
+                                </p>
+                                <p class="card-text">{{ post.content|truncatewords:40 }}</p>
+                                <a href="/blogs/{{ post.slug }}" class="btn btn-primary">Read More</a>
+
+                                {% if user.is_authenticated and user == post.author %}
+                                    <a href="/blogs/edit_post/{{post.slug}}" class="btn btn-warning">Edit</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            <div class="mt-4">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center">
+                        {% for i in posts.paginator.page_range %}
+                            {% if posts.number == i %}
+                                <li class="page-item active" aria-current="page">
+                                    <span class="page-link">{{ i }}</span>
+                                </li>
+                            {% else %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                </nav>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <!-- Leaderboard Square -->
+            <div class="right-square">
+                <h5>Leaderboard</h5>
+                <ul class="list-group">
+                    <li class="list-group-item font-weight-bold">Top Contributors by Posts</li>
+                    {% for contributor in top_post_contributors %}
+                        <li class="list-group-item">
+                            {{ forloop.counter }}. {{ contributor.user.username }} - {{ contributor.posts_counter }} posts
+                        </li>
+                    {% endfor %}
+
+                    <li class="list-group-item font-weight-bold mt-3">Top Contributors by Likes Received</li>
+                    {% for contributor in top_likes_received_contributors %}
+                        <li class="list-group-item">
+                            {{ forloop.counter }}. {{ contributor.user.username }} - {{ contributor.user_likes_counter }} likes
+                        </li>
+                    {% endfor %}
+
+                    <li class="list-group-item font-weight-bold mt-3">Top Contributors by Likes Given</li>
+                    {% for contributor in top_likes_given_contributors %}
+                        <li class="list-group-item">
+                            {{ forloop.counter }}. {{ contributor.user.username }} - {{ contributor.user_posts_likes_counter }} likes
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,7 @@
+
+<h1>Published posts</h1>    
+<ul>
+{% for post in posts %}
+    <li><a href="/blogs/{{post.id}}">{{post.title}}</a></li>
+{% endfor %}
+</ul>

@@ -1,0 +1,77 @@
+{% extends 'blogs/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow mb-4">
+                <div class="card-header bg-primary text-white">
+                    <div class="row justify-content-between">
+                        <div class="col-auto">
+                            <h3 class="mb-0">Author: {{ post.author.username }}</h3>
+                        </div>
+                        <div class="col-auto">
+                            {% if not_my_post %}
+                                <a href="/blogs/subscribe/{{post.author.pk}}/{{post.slug}}" class="btn btn-sm {% if subscribe %} btn-danger {% else %} btn-success {% endif %}">
+                                    {% if subscribe %} Unsubscribe {% else %} Subscribe {% endif %}
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card-body">
+                    <h2 class="card-title">{{ post.title }}</h2>
+                    <p class="card-text">{{ post.body }}</p>
+
+                    <hr class="my-4">
+                    <a href="/blogs/summarize-post-by-chatgpt/{{post.slug}}" class="btn btn-sm btn-success">Summarize this post</a>
+                    <hr class="my-4">
+
+                    {% if summarized %}
+                        <p class="card-text">{{ summarized }}</p>
+                        <hr class="my-4">
+                    {% endif %}
+
+                    <h4 class="mb-3">Comments:</h4>
+                    <ul class="list-group">
+                        {% for comment in comments %}
+                        <li class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>{{ comment.name }}</strong>: {{ comment.body }}
+                                </div>
+                                <small class="text-muted">{{ comment.created_time|date:"F d, Y H:i" }}</small>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+
+                    <hr class="my-4">
+                    <a href="/blogs/add_like/{{post.slug}}" class="btn btn-sm {% if like %} btn-danger {% else %} btn-success {% endif %}">{% if like %}Unlike{% else %}Like{% endif %}</a>
+                    <a href="/blogs/add_dislike/{{post.slug}}" class="btn btn-sm {% if dislike %} btn-danger {% else %} btn-success {% endif %}">{% if dislike %}Undislike{% else %}Dislike{% endif %}</a>
+                    <hr class="my-4">
+
+                    <h4 class="mb-3">Add a Comment:</h4>
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <span class="text-danger">{{ msg }}</span>
+                        {% if messages %}
+                        <div class="{{ messages.first.tags }}">{{ messages.first }}</div>
+                        {% endif %}
+                    </form>
+                </div>
+                <div class="card-footer bg-white">
+                    <a href="/blogs/" class="btn btn-danger">Back to posts</a>
+
+                    {% if user.is_authenticated and user == post.author %}
+                    <a href="/blogs/edit_post/{{post.slug}}" class="btn btn-warning">Edit</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
